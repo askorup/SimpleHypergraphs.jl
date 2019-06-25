@@ -27,6 +27,10 @@ h1[5,2] = 6.5
         println(path)
         hg_save(path, h)
 
+        ## TODO export JSON test
+        hg_export_json("data/test1.json", h)
+
+
         loaded_hg = replace(read(path, String), r"\n*$" => "")
 
         @test loaded_hg ==
