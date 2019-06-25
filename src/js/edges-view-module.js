@@ -1,7 +1,4 @@
 
-
-export function hgColorEdgePlot(path){
-
     require.config({
         paths: {
             d3: 'https://d3js.org/d3.v4.min'
@@ -12,6 +9,9 @@ export function hgColorEdgePlot(path){
     var dictN ={};
     var dictL ={};
     var dictNL={};
+
+ function hgColorEdgePlot(path){
+
 
     require(['d3'],function(d3){
 
