@@ -6,11 +6,11 @@ params: h: Hyperhgraph
 example: plot(h, type="color-edge")
          plot("data.json", type="venn")
 =#
-function hgplot(JSONString::String; type="color-edge")
+function plot(JSONString::String; type="color-edge")
     plotting(JSON.json(JSON.parsefile(JSONString)),type)
 end
 
-function hgplot(h::Hypergraph; type="color-edge")
+function plot(h::Hypergraph; type="color-edge")
     generateFileJSON(h) #generate a json file into default path
 
     f = open("data.json","r")
