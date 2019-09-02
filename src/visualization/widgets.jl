@@ -6,7 +6,7 @@ end
 function widgetColorEdge(data)
     w= Widget("colorEdge", """
     <head>
-    <link rel="stylesheet" type="text/css" href="css/color-edge-style.css">
+    <link rel="stylesheet" type="text/css" href="https://github.com/isislab-unisa/hypergraphs-plot/tree/master/css/color-edge-style.css">
     </head>
     <div class="hg-plot"></div>
     <script src="https://raw.githubusercontent.com/isislab-unisa/hypergraphs-plot/master/bundle.v1.0.js"></script>
@@ -22,7 +22,7 @@ end
 function widgetVenn(data)
     w= Widget("venn", """
     <head>
-    <link rel="stylesheet" type="text/css" href="css/venn-style.css">
+    <link rel="stylesheet" type="text/css" href="https://github.com/isislab-unisa/hypergraphs-plot/tree/master/css/venn-style.css">
     </head>
     <div id="venn"></div>
     <script src="https://raw.githubusercontent.com/isislab-unisa/hypergraphs-plot/master/bundle.v1.0.js"></script>
@@ -37,7 +37,7 @@ end
 function widgetRadal(data)
     w= Widget("radal", """
     <head>
-    <link rel="stylesheet" type="text/css" href="css/radal-style.css">
+    <link rel="stylesheet" type="text/css" href="https://github.com/isislab-unisa/hypergraphs-plot/tree/master/css/radal-style.css">
     </head>
     <div class="radarChart"></div>
     <script src="https://raw.githubusercontent.com/isislab-unisa/hypergraphs-plot/master/bundle.v1.0.js"></script>
