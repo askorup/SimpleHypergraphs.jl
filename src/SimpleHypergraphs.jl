@@ -21,8 +21,8 @@ export modularity, randompartition
 export AbstractCommunityFinder, CFModularityRandom, findcommunities
 
 #visualization
-export plot
-export generatehg, generateFileJSON
+export hgplot
+export generateFileJSON
 
 include("hypergraph.jl")
 include("bipartite.jl")
