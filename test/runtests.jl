@@ -27,10 +27,6 @@ h1[5,2] = 6.5
         println(path)
         hg_save(path, h)
 
-        ## TODO export JSON test
-        hg_export_json("data/test1.json", h)
-
-
         loaded_hg = replace(read(path, String), r"\n*$" => "")
 
         @test loaded_hg ==
@@ -53,9 +49,33 @@ h1[5,2] = 6.5
                 r"^\"\"\"(?s).*\"\"\"\n"=>"", #remove initial comments
                 r"\n*$"=>""], #remove final \n*
                 init=read("data/test_multiplelinescomment.hgf", String)) #multiple lines comment
-    end
 
-    @test_throws ArgumentError hg_load("data/test_malformedcomment.hgf", Int)
+        @test_throws ArgumentError hg_load("data/test_malformedcomment.hgf", Int)
+
+
+        # export_json(path, h)
+        # loaded_hg = load_json(path, Int)
+        #
+        # @test loaded_hg == h
+
+        #test metadata
+        h2 = Hypergraph{Float64, String, String}(5,4)
+        h2[1:3,1] .= 1.5
+        h2[3,4] = 2.5
+        h2[2,3] = 3.5
+        h2[4,3:4] .= 4.5
+        h2[5,4] = 5.5
+        h2[5,2] = 6.5
+        set_vertex_meta!(h2, "metadata1", 1)
+        set_hyperedge_meta!(h2, "hemetadata1", 2)
+
+        export_json(path, h2)
+        loaded_h2 = load_json(path, Float64, String, String)
+
+        @test h2 == loaded_h2
+        @test h2.v_meta == loaded_h2.v_meta
+        @test h2.he_meta == loaded_h2.he_meta
+    end
 
     h2 = Hypergraph{Float64}(0,0)
     for i in 1:4 add_vertex!(h2) end
@@ -152,9 +172,9 @@ end;
             hg[i] = true
         end
     end
-    
+
     cfmr = CFModularityRandom(3,10000)
-    
+
     @test findcommunities(hg,cfmr) ==
          (bp = Set.([[4, 5, 9], [1, 3, 6, 7], [2, 8, 10]]), bm = 0.21505688117829677)
     @test modularity(hg,  Set.([1:10])) == 0.0

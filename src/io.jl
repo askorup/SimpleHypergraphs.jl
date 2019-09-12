@@ -24,11 +24,12 @@ Saves a hypergraph `h` to a file `fname`.
 hg_save(fname::AbstractString, h::Hypergraph) =
     open(io -> hg_save(io, h), fname, "w")
 
+
 """
     hg_load(fname::AbstractString, T::Type{<:Real})
 
 Loads a hypergraph from a stream `io`. The second argument
-`T` represents type of data in the hypegraph.
+`T` represents type of weight values stored in the hypegraph.
 
 Skips an initial comment.
 
@@ -52,7 +53,7 @@ function hg_load(io::IO, T::Type{<:Real})
         end
        line = readline(io)
     end
-    
+
     l = split(line)
     length(l) == 2 || throw(ArgumentError("expected two integers"))
     n, k = parse.(Int, l)
@@ -80,7 +81,7 @@ end
     hg_load(fname::AbstractString, T::Type{<:Real})
 
 Loads a hypergraph from a file `fname`. The second argument
-`T` represents type of data in the hypegraph
+`T` represents type of weight values stored in the hypegraph
 
 """
 hg_load(fname::AbstractString, T::Type{<:Real}) =
@@ -88,78 +89,183 @@ hg_load(fname::AbstractString, T::Type{<:Real}) =
 
 
 """
+    export_json(io::IO, h::Hypergraph)
+
+Export a hypergraph `h` metadata to an output stream `io` in json format.
+
 """
-function hg_export_json(io::IO, h::Hypergraph)
-    n_ver,n_he=size(h)
-    s="{"
+function export_json(io::IO, h::Hypergraph)
+    """
+        Example hypergraph:
+        `h = Hypergraph{Float64,Any}(5,4)
+        h[1:3,1] .= 1.5
+        h[3,4] = 2.5
+        h[2,3] = 3.5
+        h[4,3:4] .= 4.5
+        h[5,4] = 5.5
+        h[5,2] = 6.5
 
-    sNodes="
-    \"nodes\":["
-    x=1
-    for x in 1:n_ver
-        sNodes=sNodes*"
-        {\"id\":\""*string(x)*"\" , \"links\":["
-        flag=true;
-        y=1
-        for y in 1:n_he
-            if getindex(h,x,y)!=nothing
-                sNodes=sNodes*"\""*string(y)*"\","
-                flag=false;
-            end
+        b = Business(:id_b,:name_b,:city_b,:state_b,1.0,1.0,3.5,10,[:cat1,:cat2])
+        set_vertex_meta!(h, Array{Symbol,1}([:a,:b]),1)
+        set_vertex_meta!(h, b, 2)
+
+        export_json("hmetadata.json", h)`
+
+        Output:
+        Formatted JSON Data
+        `{
+           "hg":{
+              "nvertices":5,
+              "nhyperedges":4,
+              "vertices":{
+                 "1":[
+                    "a",
+                    "b"
+                 ],
+                 "2":{
+                    "id":"id_b",
+                    "name":"name_b",
+                    "city":"city_b",
+                    "state":"state_b",
+                    "lat":1.0,
+                    "lng":1.0,
+                    "stars":3.5,
+                    "reviewcount":10,
+                    "categories":[
+                       "cat1",
+                       "cat2"
+                    ]
+                 },
+                 "3":null,
+                 "4":null,
+                 "5":null
+              },
+              "hyperedges":{
+                 "1":{
+                    "metadata":null,
+                    "vertices":{
+                       "2":1.5,
+                       "3":1.5,
+                       "1":1.5
+                    }
+                 },
+                 "2":{
+                    "metadata":null,
+                    "vertices":{
+                       "5":6.5
+                    }
+                 },
+                 "3":{
+                    "metadata":null,
+                    "vertices":{
+                       "4":4.5,
+                       "2":3.5
+                    }
+                 },
+                 "4":{
+                    "metadata":null,
+                    "vertices":{
+                       "4":4.5,
+                       "3":2.5,
+                       "5":5.5
+                    }
+                 }
+              }
+           }
+        }`
+    """
+    nvertices, nhyperedges = size(h)
+    towrite = "{\"hg\":{\"nvertices\":$(nvertices),\"nhyperedges\":$(nhyperedges),\"vertices\":{"
+
+    for nodeid = 1:nvertices
+        towrite = towrite * "\"$(nodeid)\":"
+        nodemetadata = get_vertex_meta(h, nodeid)
+        towrite = towrite * json(nodemetadata)
+
+        if nodeid != nvertices
+            towrite = towrite * ","
         end
-        if flag==false
-            sNodes=chop(sNodes);
-        end
-        sNodes=sNodes*"]},"
+
+        print(io, towrite)
+        towrite = ""
     end
-    sNodes=chop(sNodes);
-    sNodes=sNodes*"
-    ],"
 
-    sLinks="
-    \"links\":["
-    x=1
-    for x in 1:n_he
-        sLinks=sLinks*"
-        {\"id\":\""*string(x)*"\", \"nodes\": ["
-        flag=true;
-        y=1
-        for y in 1:n_ver
-            if getindex(h,y,x)!=nothing
-                sLinks=sLinks*"\""*string(y)*"\","
-                flag=false;
-            end
+    towrite = "},\"hyperedges\":{"
+
+    for edgeid = 1:nhyperedges
+        towrite = towrite * "\"$(edgeid)\":{\"metadata\":"
+        edgemetadata = get_hyperedge_meta(h, edgeid)
+        towrite = towrite * json(edgemetadata) * ",\"vertices\":"
+
+        edgevertices = getvertices(h, edgeid)
+        towrite = towrite * json(edgevertices) * "}"
+
+        if edgeid != nhyperedges
+            towrite = towrite * ","
+        else
+            towrite = towrite * "}}}"
         end
-        if flag==false
-            sLinks=chop(sLinks)
-        end
-        sLinks=sLinks*"]},"
+
+        print(io, towrite)
+        towrite = ""
     end
-    sLinks=chop(sLinks)
-    sLinks=sLinks*"
-    ],"
-
-    sNodeLinks="
-    \"nodelinks\":["
-        x=1
-        for x in 1:n_ver
-            y=1
-            for y in 1:n_he
-                if getindex(h,x,y)!=nothing
-                    sNodeLinks=sNodeLinks*"
-                    {\"node\":\""*string(x)*"\",\"link\":\""*string(y)*"\",\"value\":\""*string(getindex(h,x,y))*"\"},"
-                end
-            end
-        end
-        sNodeLinks=chop(sNodeLinks)
-        sNodeLinks=sNodeLinks*"
-        ]
-    }"
-
-    s=s*sNodes*sLinks*sNodeLinks
-
-   write(io, s)
 end
 
-hg_export_json(fname::AbstractString, h::Hypergraph) =
-    open(io -> hg_export_json(io, h), fname, "w")
+
+"""
+    export_json(fname::AbstractString, h::Hypergraph)
+
+Export a hypergraph `h` metadata to a file `fname` in json format.
+
+"""
+export_json(fname::AbstractString, h::Hypergraph) =
+    open(io -> export_json(io, h), fname, "w")
+
+
+"""
+    load_json(io::IO, T::Type{<:Real}, V::Any=Nothing, E::Any=Nothing)
+
+Loads a hypergraph from a stream `io`.
+
+**Arguments**
+
+* `T` : type of weight values stored in the hypergraph
+* `V` : type of values stored in the vertices of the hypergraph
+* `E` : type of values stored in the edges of the hypergraph
+
+"""
+function load_json(io::IO, T::Type{<:Real}, V::Any=Nothing, E::Any=Nothing)
+    hg_json = JSON.parse(io)
+    h = Hypergraph{T,V,E}(hg_json["hg"]["nvertices"], hg_json["hg"]["nhyperedges"])
+
+    for he in keys(hg_json["hg"]["hyperedges"])
+        he_vertices = hg_json["hg"]["hyperedges"][he]["vertices"]
+        for v in keys(he_vertices)
+            h[parse(Int, v), parse(Int, he)] = he_vertices[v]
+        end
+        hg_json["hg"]["hyperedges"][he]["metadata"] === nothing ||
+            set_hyperedge_meta!(h, hg_json["hg"]["hyperedges"][he]["metadata"], parse(Int, he))
+    end
+
+    for v in keys(hg_json["hg"]["vertices"])
+        hg_json["hg"]["vertices"][v] === nothing ||
+            set_vertex_meta!(h, hg_json["hg"]["vertices"][v], parse(Int, v))
+    end
+
+    h
+end
+
+"""
+    load_json(fname::AbstractString, T::Type{<:Real}, V::Any=Nothing, E::Any=Nothing)
+
+Loads a hypergraph from a file `fname`.
+
+**Arguments**
+
+* `T` : type of weight values stored in the hypergraph
+* `V` : type of values stored in the vertices of the hypergraph
+* `E` : type of values stored in the edges of the hypergraph
+
+"""
+load_json(fname::AbstractString, T::Type{<:Real}, V::Any=Nothing, E::Any=Nothing) =
+    open(io -> load_json(io, T, V, E), fname, "r")
