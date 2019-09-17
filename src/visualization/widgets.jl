@@ -3,20 +3,20 @@ struct Widget
     body
 end
 
-function widgetColorEdge(data)
+function widgetColorEdge(data,Preferences,idColorEdge)
     w= Widget("colorEdge", """
     <head>
     <link rel="stylesheet" type="text/css" href="https://isislab-unisa.github.io/hypergraphs-plot/css/color-edge-style.css">
     </head>
-    <div class="hg-plot"></div>
+    <div class="hg-plot"""*string(idColorEdge)*""""></div>
     <script src="https://isislab-unisa.github.io/hypergraphs-plot/bundle.v1.0.js"></script>
     <script>
-    hgplot.drawing.hgColorEdgePlot({graph:"""*data*"""});
+    hgplot.drawing.hgColorEdgePlot({graph:"""*data*"""},{Preferences:"""*JSON.json(Preferences)*"""},{idColorEdge:"""*"\""*string(idColorEdge)*"\""*"""});
     </script>
     """)
-
     return w
 end
+
 
 #<script src="./bundle.v1.0.js"></script>
 function widgetVenn(data)

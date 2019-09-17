@@ -1,11 +1,11 @@
 module SimpleHypergraphs
 
 using LightGraphs
+using JSON
 
 #visualization
 using PyCall
 using GraphPlot
-using JSON
 using IJulia
 
 export Hypergraph, getvertices, gethyperedges
@@ -22,7 +22,6 @@ export AbstractCommunityFinder, CFModularityRandom, findcommunities
 
 #visualization
 export plot
-export generateFileJSON
 
 include("hypergraph.jl")
 include("bipartite.jl")
