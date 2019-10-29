@@ -34,5 +34,6 @@ include("visualization/plot.jl")
 include("visualization/util.jl")
 include("visualization/wrapper.jl")
 include("visualization/widgets.jl")
+include("visualization/generateJSON.jl")
 
 end # module
