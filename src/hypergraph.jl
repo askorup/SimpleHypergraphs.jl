@@ -63,7 +63,7 @@ end
 Hypergraph{T}(n, k) where {T<:Real} =  Hypergraph{T,Nothing,Nothing}(n, k)
 
 Hypergraph{T,V}(n, k;
-              v_meta=Vector{Union{V,Nothing}}(nothing, size(m,1))
+              v_meta=Vector{Union{V,Nothing}}(nothing, size(n,1))
              ) where {T<:Real, V} = Hypergraph{T,V,Nothing}(n, k; v_meta=v_meta)
 
 function Hypergraph{V, E}(m::AbstractMatrix{Union{T, Nothing}};

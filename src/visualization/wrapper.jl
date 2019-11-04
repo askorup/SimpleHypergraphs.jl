@@ -8,7 +8,7 @@ function plotColorEdge(data,Preferences,idColorEdge)
     display(w)
 end
 
-function plotRadal(data)
-    w= widgetRadal(data)
+function plotRadal(data,preferences,idRadal)
+    w= widgetRadal(data,preferences,idRadal)
     display(w)
 end
