@@ -9,7 +9,7 @@ using GraphPlot
 using IJulia
 
 export Hypergraph, getvertices, gethyperedges
-export hg_load, hg_save, hg_export_json
+export hg_load, hg_save, hg_export_json, export_json, load_json
 export add_vertex!, add_hyperedge!
 export remove_vertex!
 export set_vertex_meta!, get_vertex_meta
