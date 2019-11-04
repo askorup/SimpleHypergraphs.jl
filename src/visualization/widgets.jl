@@ -22,7 +22,7 @@ function widgetRadal(data,preferences,idRadal)
     <head>
     <link rel="stylesheet" type="text/css" href="https://isislab-unisa.github.io/hypergraphs-plot/css/radal-style.css">
     </head>
-    <div class="radarChart"""*string(idRadal)*""""></div>
+    <div style="width:200px" class="radarChart"""*string(idRadal)*""""></div>
     <script src="https://isislab-unisa.github.io/hypergraphs-plot//bundle.v1.0.js"></script>
     <script>
     hgplot.drawing.hgRadalPlot({graph:"""*data*"""},{preferences:"""*JSON.json(preferences)*"""},{idRadal:"""*"\""*string(idRadal)*"\""*"""});;
